@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales History</title>
+    {% include 'base_css.html' %}
+</head>
+<body>
+<div class="container">
+    <h1>📈 Detailed Sales History</h1>
+    <p><a href="{{ url_for('dashboard') }}" class="btn btn-primary">← Back to Dashboard</a></p>
+
+    {% if sales %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Customer</th>
+                    <th>Quantity</th>
+                    <th>Price/Item</th>
+                    <th>Total Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.sale_date }}</td>
+                        <td>{{ sale.product_name }}</td>
+                        <td>{{ sale.customer }}</td>
+                        <td>{{ "{:,.0f}".format(sale.quantity) }}</td>
+                        <td>${{ "{:,.2f}".format(sale.sale_price) }}</td>
+                        <td><strong>${{ "{:,.2f}".format(sale.quantity * sale.sale_price) }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No sales recorded yet. Please record a sale on the dashboard.</p>
+    {% endif %}
+</div>
+</body>
+</html>

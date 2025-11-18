@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothing Shop Dashboard</title>
+    {% include 'base_css.html' %}
+</head>
+<body>
+<div class="container">
+    <h1>👕 Clothing Shop Dashboard</h1>
+    <p style="text-align: right;">
+        Logged in as: <strong>{{ session.username }}</strong>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>Record New Sale</h2>
+    <form method="POST" class="add-sale-form">
+        <div class="form-group">
+            <label for="product_name">Product</label>
+            <select id="product_name" name="product_name" required>
+                {% for product in products %}
+                    <option value="{{ product.name }}" data-price="{{ product.price }}">{{ product.name }} (${{ "{:,.2f}".format(product.price) }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" required step="1" min="1" value="1">
+        </div>
+        <div class="form-group">
+            <label for="sale_price">Sale Price ($)</label>
+            <input type="number" id="sale_price" name="sale_price" required step="0.01" min="0.01" placeholder="e.g., 19.99">
+        </div>
+        <div class="form-group">
+            <label for="customer">Customer (Optional)</label>
+            <input type="text" id="customer" name="customer" placeholder="e.g., Jane Doe">
+        </div>
+        <div class="form-group">
+            <label for="sale_date">Date</label>
+            <input type="date" id="sale_date" name="sale_date" required value="{{ today }}">
+        </div>
+        <input type="submit" value="Record Sale">
+    </form>
+
+    <div class="summary-box">
+        <p>Total Revenue: <span>${{ "{:,.2f}".format(total_revenue) }}</span></p>
+        <p>Total Items Sold: <span>{{ "{:,.0f}".format(total_items_sold) }}</span></p>
+    </div>
+
+    <h2 style="margin-top: 40px;">Sales History</h2>
+    <p>
+        <a href="{{ url_for('sales_history') }}" class="btn btn-secondary">
+            View Detailed Sales History
+        </a>
+    </p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const productSelect = document.getElementById('product_name');
+        const salePriceInput = document.getElementById('sale_price');
+
+        // Function to update the sale price input
+        function updateSalePrice() {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const defaultPrice = selectedOption.getAttribute('data-price');
+            salePriceInput.value = defaultPrice;
+        }
+
+        // Set initial price and listener
+        updateSalePrice();
+        productSelect.addEventListener('change', updateSalePrice);
+    });
+</script>
+</body>
+</html>
